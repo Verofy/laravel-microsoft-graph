@@ -194,7 +194,8 @@ class MsGraphAdmin
 
             return $responseObject;
         } catch (ClientException $e) {
-            return json_decode(($e->getResponse()->getBody()->getContents()));
+            // return json_decode(($e->getResponse()->getBody()->getContents()));
+            throw $e; // Re-throw the exception for now.
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
         }
