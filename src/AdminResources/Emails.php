@@ -109,7 +109,7 @@ class Emails extends MsGraphAdmin
     /**
      * @throws Exception
      */
-    public function get(array $params = []): array
+    public function get(string $folderId = '', array $params = []): array
     {
         if ($this->userId === '') {
             throw new Exception('userId is required.');
@@ -129,8 +129,20 @@ class Emails extends MsGraphAdmin
             $params = http_build_query($params);
         }
 
-        //get messages from folderId
-        $emails = MsGraphAdmin::get('users/'.$this->userId.'/messages?'.$params);
+        $folder = $folderId == '' ? 'Inbox' : $folderId;
+
+        //get inbox from folders list
+        $folder = MsGraphAdmin::get("users/$this->userId/mailFolders?\$filter=startswith(displayName,'$folder')", []);
+
+        if (isset($folder['value'][0])) {
+            //folder id
+            $folderId = $folder['value'][0]['id'];
+
+            //get messages from folderId
+            $emails = MsGraphAdmin::get("users/$this->userId/mailFolders/$folderId/messages?".$params, []);
+        } else {
+            throw new Exception('email folder not found');
+        }
 
         $data = MsGraphAdmin::getPagination($emails, $top, $skip);
 
@@ -264,6 +276,21 @@ class Emails extends MsGraphAdmin
         }
 
         return MsGraphAdmin::delete('users/'.$this->userId.'/messages/'.$id);
+    }
+
+    public function move(string $destinationFolder): array
+    {
+        $folder = MsGraphAdmin::get("users/$this->userId/mailFolders?\$filter=startswith(displayName,'$destinationFolder')", []);
+        if (!isset($folder['value'][0])) {
+            throw new Exception('Destination folder not found');
+        }
+
+        $destinationFolderId = $folder['value'][0]['id'];
+
+        $options = [
+            'destinationId' => $destinationFolderId
+        ];
+        return MsGraphAdmin::post('users/'.$this->userId.'/messages/'.$this->id.'/move', $options);
     }
 
     protected function prepareEmail(): array

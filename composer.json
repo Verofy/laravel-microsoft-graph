@@ -2,7 +2,7 @@
   "name": "verofy/laravel-microsoft-graph",
   "description": "A Laravel Microsoft Graph API (Office365) package",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": [
     {
       "name": "David Carr",
