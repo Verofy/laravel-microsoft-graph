@@ -27,6 +27,8 @@ class Emails extends MsGraphAdmin
 
     private array $bcc = [];
 
+    private array $replyTo = [];
+
     private array $attachments = [];
 
     public function userid(string $userId): static
@@ -74,6 +76,13 @@ class Emails extends MsGraphAdmin
     public function bcc(array $bcc): static
     {
         $this->bcc = $bcc;
+
+        return $this;
+    }
+
+    public function replyTo(array $replyTo): static
+    {
+        $this->replyTo = $replyTo;
 
         return $this;
     }
@@ -301,6 +310,7 @@ class Emails extends MsGraphAdmin
         $to = $this->to;
         $cc = $this->cc;
         $bcc = $this->bcc;
+        $replyTo = $this->replyTo;
         $attachments = $this->attachments;
 
         $toArray = [];
@@ -321,6 +331,13 @@ class Emails extends MsGraphAdmin
         if ($bcc != null) {
             foreach ($bcc as $email) {
                 $bccArray[]['emailAddress'] = ['address' => $email];
+            }
+        }
+
+        $replyToArray = [];
+        if ($replyTo != null) {
+            foreach ($replyTo as $replyToEmail) {
+                $replyToArray[]['emailAddress'] = ['address' => $replyToEmail];
             }
         }
 
@@ -356,6 +373,9 @@ class Emails extends MsGraphAdmin
         }
         if ($bccArray != null) {
             $envelope['message']['bccRecipients'] = $bccArray;
+        }
+        if ($replyToArray != null) {
+            $envelope['message']['replyTo'] = $replyToArray;
         }
         if ($attachmentarray != null) {
             $envelope['message']['attachments'] = $attachmentarray;
