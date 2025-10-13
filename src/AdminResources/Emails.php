@@ -175,9 +175,9 @@ class Emails extends MsGraphAdmin
         return MsGraphAdmin::get('users/'.$this->userId.'/messages/'.$id);
     }
 
-    public function findAttachments(string $id): MsGraphAdmin
+    public function findAttachments(string $id): array
     {
-        return MsGraphAdmin::get('users/'.$this->userId.'/messages/'.$id.'/attachments');
+        return MsGraphAdmin::get('users/'.$this->userId.'/messages/'.$id.'/attachments', []);
     }
 
     public function findInlineAttachments(array $email): array
